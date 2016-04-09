@@ -13,10 +13,12 @@ To use this program you will need to have the network namespace configured.
     netns-switch curl ip.mnus.de
 
 # Compiling
-Complie by running make, optionally change the default defines:
+Compile by running make, optionally change the default defines:
  - `UID`/`GID`: User/group id to execute as
  - `CHECK_UID`/`CHECK_GID`: User/group id combination allowed to run netns-switch
  - `NSNAME`: Network namespace to run in. Must exist prior to running. (default: `vpn`)
+
+``
 
     make
 	# or if you want to change defaults:
