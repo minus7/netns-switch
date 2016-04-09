@@ -16,6 +16,14 @@
 #define GID 1000
 #endif
 
+#ifndef CHECK_UID
+#define CHECK_UID UID
+#endif
+
+#ifndef CHECK_GID
+#define CHECK_GID GID
+#endif
+
 #ifndef NSNAME
 #define NSNAME vpn
 #endif
@@ -108,6 +116,15 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+#ifdef DEBUG
+	fprintf(stderr, "started as effective/real uid=%d/%d gid=%d/%d\n", geteuid(), getuid(), getegid(), getgid());
+#endif
+
+	if (CHECK_GID != getgid() || CHECK_UID != getuid()) {
+		fprintf(stderr, "error: only uid/gid %d/%d is allowed to execute netns-switch\n", CHECK_UID, CHECK_GID);
+		return -1;
+	}
+
 	int ret = netns_switch(NSNAMESTR);
 	if (ret < 0) {
 		return -1;
@@ -124,6 +141,10 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "setuid %d failed: %s\n", UID, strerror(errno));
 		return -1;
 	}
+
+#ifdef DEBUG
+	fprintf(stderr, "running command as effective/real uid=%d/%d gid=%d/%d\n", geteuid(), getuid(), getegid(), getgid());
+#endif
 
 	ret = execvp(argv[1], argv+1);
 	if (ret < 0) {
